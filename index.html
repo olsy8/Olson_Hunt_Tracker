@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Olson Hunt Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Olson Hunt Tracker</p>
+          <h1>Daily Hunt Log</h1>
+        </div>
+        <button class="icon-button" id="exportJson" type="button" aria-label="Export entries as JSON" title="Export JSON">
+          <span aria-hidden="true">⇩</span>
+        </button>
+      </header>
+
+      <main>
+        <section class="summary-strip" aria-label="Hunt summary">
+          <div>
+            <strong id="totalEntries">0</strong>
+            <span>entries</span>
+          </div>
+          <div>
+            <strong id="huntDays">0</strong>
+            <span>days</span>
+          </div>
+        </section>
+
+        <nav class="tabs" aria-label="Views">
+          <button class="tab active" type="button" data-view="logView">Log</button>
+          <button class="tab" type="button" data-view="timelineView">Timeline</button>
+          <button class="tab" type="button" data-view="summaryView">Summary</button>
+          <button class="tab" type="button" data-view="videoView">Video Notes</button>
+        </nav>
+
+        <section id="logView" class="view active" aria-labelledby="logHeading">
+          <div class="section-heading">
+            <h2 id="logHeading">Capture today</h2>
+            <button id="clearForm" class="text-button" type="button">New</button>
+          </div>
+
+          <form id="entryForm" autocomplete="on">
+            <input id="entryId" type="hidden" />
+
+            <div class="field-grid trip-date-day">
+              <label>
+                Trip / hunt name
+                <input id="tripName" type="text" list="tripSuggestions" placeholder="2026 Idaho elk" />
+                <datalist id="tripSuggestions"></datalist>
+              </label>
+              <label>
+                Date
+                <input id="date" type="date" required />
+              </label>
+              <label>
+                Day
+                <input id="huntDay" type="number" min="1" inputmode="numeric" placeholder="1" />
+              </label>
+            </div>
+
+            <label>
+              Hunt title
+              <input id="title" type="text" placeholder="Opening morning glassing" required />
+            </label>
+
+            <div class="field-grid two">
+              <label>
+                Target Species
+                <select id="species">
+                  <option value="">Select</option>
+                  <option>Bear</option>
+                  <option>Cougar</option>
+                  <option>Deer</option>
+                  <option>Elk</option>
+                  <option>Grouse</option>
+                  <option>Moose</option>
+                  <option>Other</option>
+                </select>
+              </label>
+              <label>
+                Area
+                <input id="location" type="text" placeholder="Unit, basin, ridge, blind..." />
+              </label>
+            </div>
+
+            <div class="field-grid three">
+              <label>
+                Start
+                <input id="startTime" type="time" />
+              </label>
+              <label>
+                End
+                <input id="endTime" type="time" />
+              </label>
+              <label>
+                Miles
+                <input id="miles" type="number" min="0" step="0.1" inputmode="decimal" placeholder="4.2" />
+              </label>
+            </div>
+
+            <div class="field-grid two">
+              <label>
+                Weather
+                <select id="weather">
+                  <option value="">Select</option>
+                  <option>Clear</option>
+                  <option>Cloudy</option>
+                  <option>Rain</option>
+                  <option>Snow</option>
+                  <option>Fog</option>
+                  <option>Windy</option>
+                </select>
+              </label>
+              <label>
+                Moon / light
+                <input id="light" type="text" placeholder="Full moon, low clouds..." />
+              </label>
+            </div>
+
+            <div class="field-grid temp-wind">
+              <label>
+                Temperature
+                <input id="temperature" type="text" placeholder="34-48 F" />
+              </label>
+              <label>
+                Wind
+                <input id="wind" type="text" placeholder="NW 8 mph" />
+              </label>
+            </div>
+
+            <label>
+              Hunters
+              <input id="hunters" type="text" list="hunterSuggestions" placeholder="Dad, Logan, Olson..." />
+              <datalist id="hunterSuggestions"></datalist>
+            </label>
+
+            <label>
+              Companions
+              <input id="companions" type="text" placeholder="Dad, Logan, solo..." />
+            </label>
+
+            <label>
+              Camp log
+              <textarea id="campLog" rows="3" placeholder="Camp location, meals, jokes, chores, problems, who was there..."></textarea>
+            </label>
+
+            <label>
+              Sightings and sign
+              <textarea id="sightings" rows="4" placeholder="Animals seen, tracks, rubs, bugles, trail camera clues..."></textarea>
+            </label>
+
+            <label>
+              Key moments
+              <textarea id="moments" rows="4" placeholder="What happened, when it happened, how it felt, decisions made..."></textarea>
+            </label>
+
+            <label>
+              Lessons learned
+              <textarea id="lessonsLearned" rows="3" placeholder="What worked, what to change tomorrow, mistakes to remember..."></textarea>
+            </label>
+
+            <label>
+              Quote of the day
+              <input id="quoteOfTheDay" type="text" placeholder="The line everyone will remember..." />
+            </label>
+
+            <label class="check-row">
+              <input id="animalKilled" type="checkbox" />
+              <span>Animal killed</span>
+            </label>
+
+            <label id="harvestField" hidden>
+              Shot / harvest details
+              <textarea id="harvest" rows="3" placeholder="Distance, angle, result, recovery notes, no-shot reasons..."></textarea>
+            </label>
+
+            <label>
+              Video editor notes
+              <textarea id="videoNotes" rows="4" placeholder="Clip names, voiceover ideas, funny lines, B-roll to look for..."></textarea>
+            </label>
+
+            <label>
+              Tags
+              <input id="tags" type="text" placeholder="glassing, bugle, packout, camp, miss" />
+            </label>
+
+            <div class="actions">
+              <button class="primary-button" type="submit">Save entry</button>
+              <button class="secondary-button" id="exportCsv" type="button">Export CSV</button>
+            </div>
+          </form>
+        </section>
+
+        <section id="timelineView" class="view" aria-labelledby="timelineHeading">
+          <div class="section-heading">
+            <h2 id="timelineHeading">Timeline</h2>
+            <label class="search">
+              <span>Search</span>
+              <input id="searchEntries" type="search" placeholder="Find a day, tag, place..." />
+            </label>
+          </div>
+          <div id="entryList" class="entry-list"></div>
+        </section>
+
+        <section id="videoView" class="view" aria-labelledby="videoHeading">
+          <div class="section-heading">
+            <h2 id="videoHeading">Edit recall</h2>
+            <button id="copyStoryboard" class="text-button" type="button">Copy</button>
+          </div>
+          <div id="storyboard" class="storyboard"></div>
+        </section>
+
+        <section id="summaryView" class="view" aria-labelledby="summaryHeading">
+          <div class="section-heading">
+            <h2 id="summaryHeading">Trip summary</h2>
+            <button id="exportMarkdown" class="text-button" type="button">Markdown</button>
+          </div>
+          <textarea id="markdownOutput" class="markdown-output" rows="10" readonly hidden></textarea>
+          <div id="tripSummary" class="trip-summary"></div>
+        </section>
+      </main>
+
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
