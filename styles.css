@@ -595,34 +595,38 @@ textarea:focus {
   }
 
   .field-grid.date-day {
-    display: flex;
-    gap: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 20px 84px;
   }
 
   .field-grid.time-miles {
-    display: flex;
-    gap: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 20px minmax(0, 1fr) 20px 76px;
   }
 
   .field-grid.date-day label:first-child {
-    flex: 1 1 auto;
+    grid-column: 1;
   }
 
   .field-grid.date-day label:last-child {
-    flex: 0 0 84px;
-    margin-left: 18px;
+    grid-column: 3;
+    margin-left: 0;
   }
 
   .field-grid.time-miles label {
-    flex: 1 1 0;
+    margin-left: 0;
   }
 
-  .field-grid.time-miles label + label {
-    margin-left: 18px;
+  .field-grid.time-miles label:nth-child(1) {
+    grid-column: 1;
+  }
+
+  .field-grid.time-miles label:nth-child(2) {
+    grid-column: 3;
   }
 
   .field-grid.time-miles label:last-child {
-    flex: 0 0 76px;
+    grid-column: 5;
   }
 
   .field-grid.temp-wind {
