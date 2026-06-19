@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Olson Hunt Tracker</title>
-    <link rel="stylesheet" href="styles.css?v=2026-06-19-5" />
+    <link rel="stylesheet" href="styles.css?v=2026-06-19-7" />
   </head>
   <body>
     <div class="app-shell">
@@ -27,6 +27,20 @@
           <div>
             <strong id="huntDays">0</strong>
             <span>days</span>
+          </div>
+        </section>
+
+        <section class="sync-panel" aria-label="Cloud sync">
+          <div>
+            <strong id="syncStatus">Local only</strong>
+            <span id="syncDetail">Sign in to sync across devices.</span>
+          </div>
+          <div class="sync-controls">
+            <input id="authEmail" type="email" autocomplete="email" placeholder="Email" />
+            <input id="authPassword" type="password" autocomplete="current-password" placeholder="Password" />
+            <button id="signInButton" class="small-button" type="button">Sign in</button>
+            <button id="createAccountButton" class="small-button" type="button">Create</button>
+            <button id="signOutButton" class="small-button" type="button" hidden>Sign out</button>
           </div>
         </section>
 
@@ -228,6 +242,9 @@
       <div id="toast" class="toast" role="status" aria-live="polite"></div>
     </div>
 
-    <script src="app.js?v=2026-06-19-5"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+    <script src="app.js?v=2026-06-19-7"></script>
   </body>
 </html>

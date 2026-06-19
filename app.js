@@ -37,8 +37,29 @@ const storyboard = document.querySelector("#storyboard");
 const tripSummary = document.querySelector("#tripSummary");
 const markdownOutput = document.querySelector("#markdownOutput");
 const searchEntries = document.querySelector("#searchEntries");
+const authEmail = document.querySelector("#authEmail");
+const authPassword = document.querySelector("#authPassword");
+const signInButton = document.querySelector("#signInButton");
+const createAccountButton = document.querySelector("#createAccountButton");
+const signOutButton = document.querySelector("#signOutButton");
+const syncStatus = document.querySelector("#syncStatus");
+const syncDetail = document.querySelector("#syncDetail");
 
 let entries = loadEntries();
+let auth = null;
+let currentUser = null;
+let db = null;
+let unsubscribeEntries = null;
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAW7om1bjIk_7rop_sxPiz_7Xk8tusUd34",
+  authDomain: "olson-hunt-tracker.firebaseapp.com",
+  projectId: "olson-hunt-tracker",
+  storageBucket: "olson-hunt-tracker.firebasestorage.app",
+  messagingSenderId: "749084997385",
+  appId: "1:749084997385:web:e754a851aa4d5b670b45d8",
+  measurementId: "G-QCS22PHGFW",
+};
 
 function loadEntries() {
   try {
@@ -50,6 +71,102 @@ function loadEntries() {
 
 function saveEntries() {
   localStorage.setItem(storageKey, JSON.stringify(entries));
+}
+
+function userEntriesCollection() {
+  if (!db || !currentUser) return null;
+  return db.collection("users").doc(currentUser.uid).collection("entries");
+}
+
+function setSyncStatus(status, detail) {
+  syncStatus.textContent = status;
+  syncDetail.textContent = detail;
+}
+
+function updateAuthUi(user) {
+  const signedIn = Boolean(user);
+  authEmail.hidden = signedIn;
+  authPassword.hidden = signedIn;
+  signInButton.hidden = signedIn;
+  createAccountButton.hidden = signedIn;
+  signOutButton.hidden = !signedIn;
+  setSyncStatus(signedIn ? "Sync on" : "Local only", signedIn ? `Signed in as ${user.email}` : "Sign in to sync across devices.");
+}
+
+async function uploadLocalEntries() {
+  const collection = userEntriesCollection();
+  if (!collection || !entries.length) return;
+
+  await Promise.all(
+    entries.map((entry) => {
+      const id = entry.id || uid();
+      const syncedEntry = { ...entry, id, syncedAt: new Date().toISOString() };
+      return collection.doc(id).set(syncedEntry, { merge: true });
+    })
+  );
+}
+
+function subscribeToCloudEntries() {
+  const collection = userEntriesCollection();
+  if (!collection) return;
+  if (unsubscribeEntries) unsubscribeEntries();
+
+  unsubscribeEntries = collection.onSnapshot(
+    (snapshot) => {
+      entries = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      saveEntries();
+      render();
+      setSyncStatus("Sync on", `Signed in as ${currentUser.email}`);
+    },
+    (error) => {
+      setSyncStatus("Sync paused", error.message);
+    }
+  );
+}
+
+async function saveCloudEntry(entry) {
+  const collection = userEntriesCollection();
+  if (!collection) return;
+  await collection.doc(entry.id).set({ ...entry, syncedAt: new Date().toISOString() }, { merge: true });
+}
+
+async function deleteCloudEntry(id) {
+  const collection = userEntriesCollection();
+  if (!collection) return;
+  await collection.doc(id).delete();
+}
+
+function initFirebase() {
+  if (!window.firebase) {
+    setSyncStatus("Local only", "Firebase scripts unavailable.");
+    return;
+  }
+
+  try {
+    firebase.initializeApp(firebaseConfig);
+    auth = firebase.auth();
+    db = firebase.firestore();
+
+    auth.onAuthStateChanged(async (user) => {
+      currentUser = user;
+      updateAuthUi(user);
+
+      if (!user) {
+        if (unsubscribeEntries) unsubscribeEntries();
+        unsubscribeEntries = null;
+        return;
+      }
+
+      try {
+        await uploadLocalEntries();
+        subscribeToCloudEntries();
+      } catch (error) {
+        setSyncStatus("Sync paused", error.message);
+      }
+    });
+  } catch (error) {
+    setSyncStatus("Local only", error.message);
+  }
 }
 
 function saveActiveTrip(tripName) {
@@ -549,6 +666,7 @@ form.addEventListener("submit", (event) => {
   }
   saveActiveTrip(entry.tripName);
   saveEntries();
+  saveCloudEntry(entry).catch((error) => setSyncStatus("Sync paused", error.message));
   clearForm({ keepTrip: true });
   render();
   showToast("Hunt entry saved");
@@ -558,6 +676,39 @@ document.querySelector("#clearForm").addEventListener("click", clearForm);
 document.querySelector("#date").addEventListener("change", applyTripDaySuggestion);
 document.querySelector("#tripName").addEventListener("input", applyTripDaySuggestion);
 document.querySelector("#animalKilled").addEventListener("change", syncHarvestVisibility);
+signInButton.addEventListener("click", async () => {
+  if (!auth) {
+    showToast("Firebase is not available");
+    return;
+  }
+
+  try {
+    await auth.signInWithEmailAndPassword(authEmail.value.trim(), authPassword.value);
+    authPassword.value = "";
+    showToast("Signed in");
+  } catch (error) {
+    showToast(error.message);
+  }
+});
+createAccountButton.addEventListener("click", async () => {
+  if (!auth) {
+    showToast("Firebase is not available");
+    return;
+  }
+
+  try {
+    await auth.createUserWithEmailAndPassword(authEmail.value.trim(), authPassword.value);
+    authPassword.value = "";
+    showToast("Account created");
+  } catch (error) {
+    showToast(error.message);
+  }
+});
+signOutButton.addEventListener("click", async () => {
+  if (!auth) return;
+  await auth.signOut();
+  showToast("Signed out");
+});
 document.querySelector("#exportCsv").addEventListener("click", exportCsv);
 document.querySelector("#exportJson").addEventListener("click", () => {
   exportBlob("olson-hunt-tracker.json", "application/json", JSON.stringify(sortEntries(entries), null, 2));
@@ -599,6 +750,7 @@ entryList.addEventListener("click", (event) => {
   if (deleteId) {
     entries = entries.filter((item) => item.id !== deleteId);
     saveEntries();
+    deleteCloudEntry(deleteId).catch((error) => setSyncStatus("Sync paused", error.message));
     render();
     showToast("Entry deleted");
   }
@@ -608,3 +760,4 @@ searchEntries.addEventListener("input", renderTimeline);
 
 clearForm();
 render();
+initFirebase();
