@@ -204,6 +204,7 @@ textarea {
 
 input,
 select {
+  height: 48px;
   min-height: 48px;
   padding: 0 12px;
 }
@@ -241,8 +242,15 @@ textarea:focus {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.field-grid.trip-date-day {
-  grid-template-columns: minmax(190px, 280px) minmax(0, 170px) minmax(78px, 92px);
+.field-grid.date-day {
+  grid-template-columns: minmax(0, 170px) minmax(78px, 92px);
+  align-items: end;
+  justify-content: start;
+}
+
+.field-grid.time-miles {
+  grid-template-columns: minmax(118px, 145px) minmax(118px, 145px) minmax(78px, 100px);
+  align-items: end;
   justify-content: start;
 }
 
@@ -582,8 +590,12 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 
-  .field-grid.trip-date-day {
-    grid-template-columns: minmax(0, 1fr) minmax(118px, 150px) minmax(74px, 86px);
+  .field-grid.date-day {
+    grid-template-columns: minmax(0, 1fr) minmax(74px, 86px);
+  }
+
+  .field-grid.time-miles {
+    grid-template-columns: minmax(112px, 1fr) minmax(112px, 1fr) minmax(72px, 86px);
   }
 
   .field-grid.temp-wind {

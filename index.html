@@ -46,12 +46,13 @@
           <form id="entryForm" autocomplete="on">
             <input id="entryId" type="hidden" />
 
-            <div class="field-grid trip-date-day">
-              <label>
-                Trip / hunt name
-                <input id="tripName" type="text" list="tripSuggestions" placeholder="2026 Idaho elk" />
-                <datalist id="tripSuggestions"></datalist>
-              </label>
+            <label>
+              Trip / hunt name
+              <input id="tripName" type="text" list="tripSuggestions" placeholder="2026 Idaho elk" />
+              <datalist id="tripSuggestions"></datalist>
+            </label>
+
+            <div class="field-grid date-day">
               <label>
                 Date
                 <input id="date" type="date" required />
@@ -87,7 +88,7 @@
               </label>
             </div>
 
-            <div class="field-grid three">
+            <div class="field-grid time-miles">
               <label>
                 Start
                 <input id="startTime" type="time" />
