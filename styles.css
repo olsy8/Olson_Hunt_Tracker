@@ -245,12 +245,14 @@ textarea:focus {
 .field-grid.date-day {
   grid-template-columns: minmax(0, 170px) minmax(78px, 92px);
   align-items: end;
+  column-gap: 14px;
   justify-content: start;
 }
 
 .field-grid.time-miles {
   grid-template-columns: minmax(118px, 145px) minmax(118px, 145px) minmax(78px, 100px);
   align-items: end;
+  column-gap: 14px;
   justify-content: start;
 }
 
@@ -591,11 +593,13 @@ textarea:focus {
   }
 
   .field-grid.date-day {
-    grid-template-columns: minmax(0, 1fr) minmax(74px, 86px);
+    grid-template-columns: minmax(0, 1fr) minmax(72px, 84px);
+    column-gap: 12px;
   }
 
   .field-grid.time-miles {
-    grid-template-columns: minmax(112px, 1fr) minmax(112px, 1fr) minmax(72px, 86px);
+    grid-template-columns: minmax(98px, 1fr) minmax(98px, 1fr) minmax(66px, 80px);
+    column-gap: 12px;
   }
 
   .field-grid.temp-wind {
