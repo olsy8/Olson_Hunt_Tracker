@@ -188,6 +188,7 @@ label {
   color: var(--muted);
   font-size: 0.82rem;
   font-weight: 800;
+  min-width: 0;
 }
 
 input,
@@ -205,6 +206,7 @@ textarea {
 input,
 select {
   height: 48px;
+  max-width: 100%;
   min-height: 48px;
   padding: 0 12px;
 }
@@ -593,13 +595,29 @@ textarea:focus {
   }
 
   .field-grid.date-day {
-    grid-template-columns: minmax(0, 1fr) minmax(72px, 84px);
-    column-gap: 18px;
+    display: flex;
+    gap: 18px;
   }
 
   .field-grid.time-miles {
-    grid-template-columns: minmax(92px, 1fr) minmax(92px, 1fr) minmax(62px, 76px);
-    column-gap: 18px;
+    display: flex;
+    gap: 18px;
+  }
+
+  .field-grid.date-day label:first-child {
+    flex: 1 1 auto;
+  }
+
+  .field-grid.date-day label:last-child {
+    flex: 0 0 84px;
+  }
+
+  .field-grid.time-miles label {
+    flex: 1 1 0;
+  }
+
+  .field-grid.time-miles label:last-child {
+    flex: 0 0 76px;
   }
 
   .field-grid.temp-wind {
